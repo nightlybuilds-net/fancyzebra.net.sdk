@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Xamarin.Forms" Version="4.0.0.709238" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\fancyzebra.net.sdk.core\fancyzebra.net.sdk.core.csproj" />
+    </ItemGroup>
+
+</Project>
