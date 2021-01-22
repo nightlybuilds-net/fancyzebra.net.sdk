@@ -10,7 +10,7 @@ namespace fancyzebra.net.sdk.core.Services
     public class PrivacyService: IPrivacyService
     {
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "todo";
+        private const string ApiUrl = "https://foo.bar/";
         private const string FunctionKey = "todo";
         public PrivacyService()
         {

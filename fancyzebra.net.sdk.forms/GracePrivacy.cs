@@ -12,7 +12,7 @@ namespace fancyzebra.net.sdk.forms
 {
     public class GracePrivacy: IGracePrivacy, IGracePrivacyBuilder
     {
-        private GracePrivacy _instance;
+        private static GracePrivacy _instance;
         private readonly IPrivacyService _privacyService;
         private string _appId;
         private string _userId;
@@ -28,13 +28,13 @@ namespace fancyzebra.net.sdk.forms
             this._stringLocalizer = new StringLocalizer();
         }
 
-        public GracePrivacy Instance
+        public static GracePrivacy Instance
         {
             get
             {
-                if (this._instance == null)
-                    this._instance = new GracePrivacy();
-                return this._instance;
+                if (_instance == null)
+                    _instance = new GracePrivacy();
+                return _instance;
             }
         }
 
@@ -87,7 +87,6 @@ namespace fancyzebra.net.sdk.forms
             
             if(this._culture == null)
                 this._culture = CultureInfo.CurrentUICulture;
-
 
             this._privacyService.Init(this._appId, this._userId, this._culture);
             this.Response = await this._privacyService.GetDocumentAsync();
