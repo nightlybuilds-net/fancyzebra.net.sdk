@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+    ios:Page.UseSafeArea="true"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:xaml="clr-namespace:fancyzebra.net.sdk.forms.Xaml;assembly=fancyzebra.net.sdk.forms"
+    xmlns:dtos="clr-namespace:fancyzebra.net.sdk.core.Dtos;assembly=fancyzebra.net.sdk.core"
+    x:Class="fancyzebra.net.sdk.forms.Xaml.GracePrivacyPage"
+    x:Name="Modal"
+    x:DataType="xaml:GracePrivacyViewModel">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollView>
+            <ListView
+                HasUnevenRows="True"
+                Margin="10"
+                SeparatorVisibility="None"
+                ItemsSource="{Binding Documents}">
+                <ListView.ItemTemplate>
+                    <DataTemplate
+                        x:DataType="dtos:DocumentDto">
+                        <ViewCell>
+                            <StackLayout
+                                Margin="0,0,0,20"
+                                Orientation="Vertical">
+                                <Label
+                                    Text="{Binding Text}" />
+                                <StackLayout
+                                    Orientation="Vertical"
+                                    BindableLayout.ItemsSource="{Binding Clauses}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate
+                                            x:DataType="dtos:ClauseDto">
+                                                <StackLayout
+                                                    Orientation="Horizontal">
+                                                    <CheckBox
+                                                        IsChecked="{Binding IsAccepted}"/>
+                                                    <Label
+                                                        VerticalOptions="Center"
+                                                        Text="{Binding Text}"/>          
+                                                    <Label
+                                                        FontSize="Small"
+                                                        TextColor="IndianRed"
+                                                        IsVisible="{Binding IsMandatory}"
+                                                        VerticalOptions="Center"
+                                                        Text="{Binding BindingContext.StringLocalizer.Mandatory,
+                                                         Source={x:Reference Name=Modal}}"/>         
+                                                </StackLayout>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </StackLayout>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+        </ScrollView>
+        <Button
+            Margin="10,0"
+            Text="{Binding StringLocalizer.Accept}"
+            Command="{Binding AcceptCommand}"
+            Grid.Row="1" />
+    </Grid>
+</ContentPage>

@@ -10,5 +10,6 @@ namespace fancyzebra.net.sdk.core.Services
         string GenericError { get; set; }
         string Error { get; set; }
         string Ok { get; set; }
+        string Mandatory { get; set; }
     }
 }

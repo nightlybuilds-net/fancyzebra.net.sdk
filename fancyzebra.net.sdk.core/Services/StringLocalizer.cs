@@ -10,6 +10,7 @@ namespace fancyzebra.net.sdk.core.Services
         public string GenericError { get; set; }
         public string Error { get; set; }
         public string Ok { get; set; }
+        public string Mandatory { get; set; }
 
         public StringLocalizer()
         {
@@ -21,6 +22,7 @@ namespace fancyzebra.net.sdk.core.Services
             this.GenericError = "An Error has occured, please try later";
             this.Error = "Error";
             this.Ok = "Ok";
+            this.Mandatory = "(Mandatory)";
         }
     }
 }

@@ -8,5 +8,7 @@ namespace fancyzebra.net.sdk.core.Services
     {
         void Init(string appId, string userId, CultureInfo culture);
         Task<PrivacyResponseDto> GetDocumentAsync();
+        Task AcceptDocumentAsync();
+        Task<bool> CheckDocumentsAsync();
     }
 }

@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using fancyzebra.net.sdk.core.Dtos;
 using fancyzebra.net.sdk.core.Exceptions;
 using fancyzebra.net.sdk.core.Services;
+using fancyzebra.net.sdk.forms.Xaml;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.Xaml;
 
 namespace fancyzebra.net.sdk.forms
 {
-    public class GracePrivacy: IGracePrivacy, IGracePrivacyBuilder
+    public class GracePrivacy: IGracePrivacyBuilder
     {
         private static GracePrivacy _instance;
         private readonly IPrivacyService _privacyService;
@@ -89,98 +93,17 @@ namespace fancyzebra.net.sdk.forms
                 this._culture = CultureInfo.CurrentUICulture;
 
             this._privacyService.Init(this._appId, this._userId, this._culture);
-            this.Response = await this._privacyService.GetDocumentAsync();
-            await this.ManageResponse(this.Response);
-        }
-
-        public PrivacyResponseDto Response { get; private set; }
-
-        private async Task ManageResponse(PrivacyResponseDto responseDto)
-        {
-            if (!responseDto.Documents.Any())
-                return;
-            await this.InjectDocumentView();
+            var response = await this._privacyService.CheckDocumentsAsync();
+            if(!response)
+                await this.InjectDocumentView();
         }
 
         private async Task InjectDocumentView()
         {
-            this._page = this.GetModalPage();
+            this._page = new GracePrivacyPage(this._app.NavigationProxy, this._privacyService, this._stringLocalizer);
             await this._app.NavigationProxy.PushModalAsync(this._page);
         }
 
-        private Page GetModalPage()
-        {
-            var modal = new ContentPage();
-
-            var documentContainer = new StackLayout() {Orientation = StackOrientation.Vertical};
-
-
-            foreach (var document in this.Response.Documents)
-            {
-                documentContainer.Children.Add(new Label(){Text = document.Text});
-                foreach (var clause in document.Clauses)
-                {
-                    documentContainer.Children.Add(new Label(){Text = clause.Text});
-                    var checkBoxContainer = new StackLayout() {Orientation = StackOrientation.Horizontal};
-                    checkBoxContainer.Children.Add(new Label() {Text = this._stringLocalizer.Accept});
-                    checkBoxContainer.Children.Add(new CheckBox());
-                }
-            }
-
-            var acceptButton = new Button
-            {
-                Text = this._stringLocalizer.Request,
-                Command = new Command(async () => await this.InnerAccept())
-            };
-            
-            documentContainer.Children.Add(acceptButton);
-
-            modal.Content = documentContainer; 
-
-            
-            if (this._details != null)
-            {
-                //todo view personalization
-            }
-
-            return modal;
-        }
-
-        private async Task InnerAccept()
-        {
-            try
-            {
-                this.ThrowForNoConnection();
-                this.IsBusy = true;
-            }
-            catch (Exception e)
-            {
-                var errorMessage = this.GetMessageFromException(e);
-                await this._page.DisplayAlert(this._stringLocalizer.Error, errorMessage, this._stringLocalizer.Ok);
-            }
-            finally
-            {
-                this.IsBusy = false;
-            }
-        }
-
-        private string GetMessageFromException(Exception exception)
-        {
-            switch (exception)
-            {
-                case ConnectivityException ce:
-                    return this._stringLocalizer.NoConnectionMessage;
-                default:
-                    return this._stringLocalizer.GenericError;
-            }
-        }
-
-        public bool IsBusy { get; set; }
-
-        public void ThrowForNoConnection()
-        {
-            if (Connectivity.NetworkAccess != NetworkAccess.Internet)
-                throw new ConnectivityException();
-        }
+        
     }
 }
