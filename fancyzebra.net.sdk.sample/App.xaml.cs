@@ -16,8 +16,8 @@ namespace fancyzebra.net.sdk.sample
         {
             await GracePrivacy
                 .Instance
-                .WithAppId("test")
-                .WithUserId("test")
+                .WithAppId("b7013b4421c94758a606f968baed342f")
+                .WithUserId("mjm1")
                 .WithApp(this)
                 .Init();
         }

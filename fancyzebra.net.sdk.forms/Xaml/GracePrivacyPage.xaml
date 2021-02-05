@@ -23,13 +23,13 @@
                 ItemsSource="{Binding Documents}">
                 <ListView.ItemTemplate>
                     <DataTemplate
-                        x:DataType="dtos:DocumentDto">
+                        x:DataType="dtos:DocumentToAcceptDto">
                         <ViewCell>
                             <StackLayout
                                 Margin="0,0,0,20"
                                 Orientation="Vertical">
                                 <Label
-                                    Text="{Binding Text}" />
+                                    Text="{Binding DocumentText.HtmlText}" />
                                 <StackLayout
                                     Orientation="Vertical"
                                     BindableLayout.ItemsSource="{Binding Clauses}">

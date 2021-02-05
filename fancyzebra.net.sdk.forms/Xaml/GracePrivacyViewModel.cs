@@ -21,14 +21,14 @@ namespace fancyzebra.net.sdk.forms.Xaml
         private readonly Page _page;
         private readonly IPrivacyService _privacyService;
         public IStringLocalizer StringLocalizer { get; private set; }
-        private ObservableCollection<DocumentDto> _documents;
+        private ObservableCollection<DocumentToAcceptDto> _documents;
         
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand CloseCommand { get; private set; }
         public ICommand AcceptCommand { get; private set; }
 
-        public ObservableCollection<DocumentDto> Documents
+        public ObservableCollection<DocumentToAcceptDto> Documents
         {
             get => this._documents;
             set
@@ -47,7 +47,7 @@ namespace fancyzebra.net.sdk.forms.Xaml
             this._page = page;
             this._privacyService = privacyService;
             this.StringLocalizer = stringLocalizer;
-            this.Documents = new ObservableCollection<DocumentDto>();
+            this.Documents = new ObservableCollection<DocumentToAcceptDto>();
             this.CloseCommand = new Command(async () => await this._navigationProxy.PopModalAsync());
             this.AcceptCommand = new Command(async () => await this.InnerAccept());
 
@@ -62,7 +62,7 @@ namespace fancyzebra.net.sdk.forms.Xaml
                 this.IsBusy = true;
                 var responseDto = await this._privacyService.GetDocumentAsync();
                 this.Documents.Clear();
-                responseDto.Documents.ForEach(document => this.Documents.Add(document));
+                responseDto.ForEach(document => this.Documents.Add(document));
             }
             catch (Exception e)
             {

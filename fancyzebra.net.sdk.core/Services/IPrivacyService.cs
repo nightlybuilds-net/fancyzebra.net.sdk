@@ -7,7 +7,7 @@ namespace fancyzebra.net.sdk.core.Services
     public interface IPrivacyService
     {
         void Init(string appId, string userId, CultureInfo culture);
-        Task<PrivacyResponseDto> GetDocumentAsync();
+        Task<DocumentToAcceptDto[]> GetDocumentAsync();
         Task AcceptDocumentAsync();
         Task<bool> CheckDocumentsAsync();
     }
