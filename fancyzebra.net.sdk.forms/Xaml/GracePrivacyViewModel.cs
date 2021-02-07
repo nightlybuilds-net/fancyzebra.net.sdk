@@ -15,14 +15,14 @@ using Xamarin.Forms.Internals;
 
 namespace fancyzebra.net.sdk.forms.Xaml
 {
-    public class GracePrivacyViewModel: INotifyPropertyChanged
+    public class GracePrivacyViewModel : INotifyPropertyChanged
     {
         private readonly NavigationProxy _navigationProxy;
         private readonly Page _page;
         private readonly IPrivacyService _privacyService;
         public IStringLocalizer StringLocalizer { get; private set; }
         private ObservableCollection<DocumentToAcceptDto> _documents;
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand CloseCommand { get; private set; }
@@ -84,7 +84,16 @@ namespace fancyzebra.net.sdk.forms.Xaml
                 var isAccepted = this.CheckAcceptance();
                 if (!isAccepted)
                     throw new AcceptanceException();
-                await this._privacyService.AcceptDocumentAsync();
+                await this._privacyService.AcceptDocumentAsync(this.Documents.Select(documentToAcceptDto =>
+                    new AcceptDocumentTextRequest
+                    {
+                        DocumentTextId = documentToAcceptDto.DocumentText.Id,
+                        Clauses = documentToAcceptDto.Clauses.Select(dto => new AcceptClauseRequest
+                        {
+                            Accepted = dto.IsAccepted,
+                            ClauseId = dto.Id
+                        })
+                    }));
                 await this._navigationProxy.PopModalAsync();
             }
             catch (Exception e)
@@ -113,7 +122,7 @@ namespace fancyzebra.net.sdk.forms.Xaml
             if (Connectivity.NetworkAccess != NetworkAccess.Internet)
                 throw new ConnectivityException();
         }
-        
+
         private string GetMessageFromException(Exception exception)
         {
             switch (exception)

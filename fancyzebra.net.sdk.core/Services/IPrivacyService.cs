@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using fancyzebra.net.sdk.core.Dtos;
@@ -8,7 +9,7 @@ namespace fancyzebra.net.sdk.core.Services
     {
         void Init(string appId, string userId, CultureInfo culture);
         Task<DocumentToAcceptDto[]> GetDocumentAsync();
-        Task AcceptDocumentAsync();
+        Task AcceptDocumentAsync(IEnumerable<AcceptDocumentTextRequest> acceptResult);
         Task<bool> CheckDocumentsAsync();
     }
 }

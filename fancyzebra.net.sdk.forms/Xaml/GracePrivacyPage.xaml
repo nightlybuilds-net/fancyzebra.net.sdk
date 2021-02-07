@@ -17,6 +17,7 @@
         </Grid.RowDefinitions>
         <ScrollView>
             <ListView
+                SelectionMode="None"
                 HasUnevenRows="True"
                 Margin="10"
                 SeparatorVisibility="None"

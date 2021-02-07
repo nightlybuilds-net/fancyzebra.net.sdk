@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using fancyzebra.net.sdk.core.Dtos;
-using Newtonsoft.Json;
+using System.Text.Json;
+
+
 
 namespace fancyzebra.net.sdk.core.Services
 {
@@ -30,29 +34,42 @@ namespace fancyzebra.net.sdk.core.Services
             this._userId = userId;
             this._culture = culture;
             
-            // this._httpClient.DefaultRequestHeaders.Add("AppId", appId);
-            // this._httpClient.DefaultRequestHeaders.Add("UserId", userId);
-            // this._httpClient.DefaultRequestHeaders.Add("Culture", culture.Name); //four letters
+            // this._httpClient.DefaultRequestHeaders.Add("appId", appId);
+            // this._httpClient.DefaultRequestHeaders.Add("userId", userId);
+            // this._httpClient.DefaultRequestHeaders.Add("culture", culture.Name); //four letters
         }
 
         public async Task<DocumentToAcceptDto[]> GetDocumentAsync()
         {
-            try
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                new Uri("http://localhost:7071/api/acceptance/mydocuments"));
+            request.Headers.Add("appId",new []{this._appId});
+            request.Headers.Add("userId",new []{this._userId});
+            request.Headers.Add("culture",new []{this._culture.Name});
+            var response = await this._httpClient.SendAsync(request);
+            var payload = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<DocumentToAcceptDto[]>(payload, new JsonSerializerOptions
             {
-                var response = await this._httpClient.GetAsync($"http://localhost:7071/api/acceptance/mydocuments?appId={this._appId}&userId={this._userId}&lang={this._culture}");
-                var payload = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<DocumentToAcceptDto[]>(payload);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+                PropertyNameCaseInsensitive = true
+            });
         }
 
-        public async Task AcceptDocumentAsync()
+        public async Task AcceptDocumentAsync(IEnumerable<AcceptDocumentTextRequest> acceptResult)
         {
-            await Task.Delay(1000);
+            var dto = new AcceptDocumentRequest
+            {
+                AppId = this._appId,
+                AppUserId = this._userId,
+                AcceptedTexts = acceptResult
+            };
+            
+            var request = new HttpRequestMessage(HttpMethod.Post,
+                new Uri("http://localhost:7071/api/acceptance/acceptdoc"))
+            {
+                Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json")
+            };
+            // todo manage result
+            await this._httpClient.SendAsync(request);
         }
 
         public async Task<bool> CheckDocumentsAsync()
