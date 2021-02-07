@@ -6,10 +6,10 @@ namespace fancyzebra.net.sdk.core.Services
         public string Request { get; }
         public string MandatoryClausesMissingMessage { get; }
         public string SuccessMessage { get; }
-        string NoConnectionMessage { get; set; }
-        string GenericError { get; set; }
-        string Error { get; set; }
-        string Ok { get; set; }
-        string Mandatory { get; set; }
+        string NoConnectionMessage { get; }
+        string GenericError { get; }
+        string Error { get;}
+        string Ok { get;}
+        string Mandatory { get;}
     }
 }

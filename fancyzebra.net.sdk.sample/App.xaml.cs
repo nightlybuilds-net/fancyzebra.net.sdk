@@ -5,6 +5,8 @@ namespace fancyzebra.net.sdk.sample
 {
     public partial class App : Application
     {
+        public static IFancyForms FancyPrivacy { get; private set; }
+        
         public App()
         {
             InitializeComponent();
@@ -12,14 +14,13 @@ namespace fancyzebra.net.sdk.sample
             MainPage = new MainPage();
         }
 
-        protected override async void OnStart()
+        protected override void OnStart()
         {
-            await GracePrivacy
-                .Instance
+            FancyPrivacy = FancyBuilder
+                .New()
                 .WithAppId("b7013b4421c94758a606f968baed342f")
-                .WithUserId("mjm1")
                 .WithApp(this)
-                .Init();
+                .Build();
         }
 
         protected override void OnSleep()

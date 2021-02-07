@@ -72,10 +72,6 @@ namespace fancyzebra.net.sdk.core.Services
             await this._httpClient.SendAsync(request);
         }
 
-        public async Task<bool> CheckDocumentsAsync()
-        {
-            await Task.Delay(1000);
-            return false;
-        }
+       
     }
 }

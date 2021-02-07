@@ -1,18 +1,18 @@
 namespace fancyzebra.net.sdk.core.Services
 {
-    public class StringLocalizer: IStringLocalizer
+    public class EnglishStringLocalizer: IStringLocalizer
     {
-        public string Accept { get; private set; }
-        public string Request { get; private set; }
-        public string MandatoryClausesMissingMessage { get; private set; }
-        public string SuccessMessage { get; private set; }
-        public string NoConnectionMessage { get; set; }
-        public string GenericError { get; set; }
-        public string Error { get; set; }
-        public string Ok { get; set; }
-        public string Mandatory { get; set; }
+        public string Accept { get; }
+        public string Request { get; }
+        public string MandatoryClausesMissingMessage { get; }
+        public string SuccessMessage { get; }
+        public string NoConnectionMessage { get; }
+        public string GenericError { get; }
+        public string Error { get; }
+        public string Ok { get; }
+        public string Mandatory { get;}
 
-        public StringLocalizer()
+        public EnglishStringLocalizer()
         {
             this.Accept = "I accept";
             this.Request = "Accept privacy";

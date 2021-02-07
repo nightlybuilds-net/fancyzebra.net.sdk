@@ -10,6 +10,5 @@ namespace fancyzebra.net.sdk.core.Services
         void Init(string appId, string userId, CultureInfo culture);
         Task<DocumentToAcceptDto[]> GetDocumentAsync();
         Task AcceptDocumentAsync(IEnumerable<AcceptDocumentTextRequest> acceptResult);
-        Task<bool> CheckDocumentsAsync();
     }
 }

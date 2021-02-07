@@ -14,5 +14,16 @@ namespace fancyzebra.net.sdk.sample
         {
             InitializeComponent();
         }
+
+        private async void Button_OnClicked(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.Username.Text))
+            {
+                await this.DisplayAlert("Warning", "Enter a user name/ID", "OK");
+                return;
+            }
+
+            await App.FancyPrivacy.EnsureDocumentsForUser(this.Username.Text);
+        }
     }
 }

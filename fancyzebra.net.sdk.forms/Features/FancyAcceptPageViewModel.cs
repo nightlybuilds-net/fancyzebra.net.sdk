@@ -8,66 +8,57 @@ using System.Windows.Input;
 using fancyzebra.net.sdk.core.Dtos;
 using fancyzebra.net.sdk.core.Exceptions;
 using fancyzebra.net.sdk.core.Services;
-using fancyzebra.net.sdk.forms.Annotations;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
-namespace fancyzebra.net.sdk.forms.Xaml
+namespace fancyzebra.net.sdk.forms.Features
 {
-    public class GracePrivacyViewModel : INotifyPropertyChanged
+    public class FancyAcceptPageViewModel : INotifyPropertyChanged
     {
         private readonly NavigationProxy _navigationProxy;
         private readonly Page _page;
         private readonly IPrivacyService _privacyService;
+        private readonly DocumentToAcceptDto[] _documentToAcceptDtos;
         public IStringLocalizer StringLocalizer { get; private set; }
-        private ObservableCollection<DocumentToAcceptDto> _documents;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand CloseCommand { get; private set; }
         public ICommand AcceptCommand { get; private set; }
 
-        public ObservableCollection<DocumentToAcceptDto> Documents
-        {
-            get => this._documents;
-            set
-            {
-                this._documents = value;
-                this.OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<DocumentToAcceptDto> Documents { get; set; }
 
-        public GracePrivacyViewModel(NavigationProxy navigationProxy,
+        public FancyAcceptPageViewModel(NavigationProxy navigationProxy,
             Page page,
             IPrivacyService privacyService,
-            IStringLocalizer stringLocalizer)
+            IStringLocalizer stringLocalizer, DocumentToAcceptDto[] documentToAcceptDtos)
         {
             this._navigationProxy = navigationProxy;
             this._page = page;
             this._privacyService = privacyService;
+            this._documentToAcceptDtos = documentToAcceptDtos;
             this.StringLocalizer = stringLocalizer;
             this.Documents = new ObservableCollection<DocumentToAcceptDto>();
             this.CloseCommand = new Command(async () => await this._navigationProxy.PopModalAsync());
-            this.AcceptCommand = new Command(async () => await this.InnerAccept());
-
-            this._page.Appearing += async (sender, args) => await this.GetDocuments();
+            this.AcceptCommand = new Command(async () => await this.InnerAccept(), () => !this.IsBusy);
+            this.ShowDocuments();
         }
 
-        private async Task GetDocuments()
+        private void ShowDocuments()
         {
             try
             {
                 this.ThrowForNoConnection();
                 this.IsBusy = true;
-                var responseDto = await this._privacyService.GetDocumentAsync();
                 this.Documents.Clear();
-                responseDto.ForEach(document => this.Documents.Add(document));
+                this._documentToAcceptDtos.ForEach(document => this.Documents.Add(document));
             }
             catch (Exception e)
             {
                 var errorMessage = this.GetMessageFromException(e);
-                await this._page.DisplayAlert(this.StringLocalizer.Error, errorMessage, this.StringLocalizer.Ok);
+                this._page.DisplayAlert(this.StringLocalizer.Error, errorMessage, this.StringLocalizer.Ok);
+                this._navigationProxy.PopModalAsync();
             }
             finally
             {
@@ -84,6 +75,7 @@ namespace fancyzebra.net.sdk.forms.Xaml
                 var isAccepted = this.CheckAcceptance();
                 if (!isAccepted)
                     throw new AcceptanceException();
+
                 await this._privacyService.AcceptDocumentAsync(this.Documents.Select(documentToAcceptDto =>
                     new AcceptDocumentTextRequest
                     {
@@ -100,6 +92,10 @@ namespace fancyzebra.net.sdk.forms.Xaml
             {
                 var errorMessage = this.GetMessageFromException(e);
                 await this._page.DisplayAlert(this.StringLocalizer.Error, errorMessage, this.StringLocalizer.Ok);
+                
+                // no connection? server error... unblock user app
+                if(e.GetType() != typeof(AcceptanceException))
+                    await this._navigationProxy.PopModalAsync();
             }
             finally
             {
@@ -115,7 +111,16 @@ namespace fancyzebra.net.sdk.forms.Xaml
                 .All(cl => cl.IsAccepted);
         }
 
-        public bool IsBusy { get; set; }
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => this._isBusy;
+            set
+            {
+                this._isBusy = value;
+                ((Command)this.AcceptCommand).ChangeCanExecute();
+            }
+        }
 
         public void ThrowForNoConnection()
         {
